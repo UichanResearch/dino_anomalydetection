@@ -1,0 +1,250 @@
+00002.jpg/Pleural Effusion
+00005.jpg/Enlarged Cardiomediastinum
+00006.jpg/Lung Opacity/Consolidation/Pleural Other/Fracture
+00018.jpg/Atelectasis
+00025.jpg/Lung Lesion
+00028.jpg
+00029.jpg/Cardiomegaly/Lung Opacity/Edema/Atelectasis
+00030.jpg/Cardiomegaly/Edema/Atelectasis/Pleural Effusion
+00032.jpg/Pleural Effusion
+00034.jpg/Cardiomegaly/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00037.jpg/Pneumonia
+00039.jpg/Cardiomegaly/Lung Opacity/Pleural Effusion
+00046.jpg/Cardiomegaly/Lung Opacity
+00048.jpg/Pleural Effusion
+00051.jpg
+00052.jpg/Lung Opacity/Pleural Effusion
+00053.jpg
+00064.jpg/Consolidation/Pneumonia
+00068.jpg/Atelectasis/Pleural Effusion/Pleural Other
+00070.jpg/Lung Opacity/Atelectasis
+00075.jpg/Lung Opacity/Pneumonia/Atelectasis/Pleural Effusion/Fracture
+00080.jpg/Pneumothorax/Pleural Effusion
+00081.jpg/Pleural Effusion
+00083.jpg/Enlarged Cardiomediastinum/Cardiomegaly/Lung Opacity/Pleural Effusion
+00089.jpg/Lung Opacity
+00090.jpg/Lung Opacity/Pneumothorax/Pleural Other
+00092.jpg/Lung Opacity/Edema/Pneumonia
+00094.jpg/Pneumothorax
+00101.jpg/Lung Opacity/Atelectasis/Fracture
+00102.jpg/Lung Opacity/Atelectasis/Fracture
+00103.jpg/Lung Opacity
+00104.jpg/Lung Opacity/Edema/Pneumonia
+00105.jpg/Lung Opacity/Lung Lesion/Edema/Pleural Effusion
+00109.jpg/Lung Opacity/Pneumonia/Pleural Other
+00113.jpg/Pleural Effusion
+00114.jpg
+00122.jpg/Lung Opacity/Atelectasis
+00124.jpg/Enlarged Cardiomediastinum/Pleural Effusion/Pleural Other
+00126.jpg/Edema/Atelectasis
+00127.jpg/Edema/Pneumonia
+00136.jpg/Pleural Other
+00139.jpg/Cardiomegaly/Lung Opacity/Edema/Pneumonia
+00141.jpg/Cardiomegaly/Lung Opacity/Edema
+00144.jpg/Cardiomegaly/Lung Opacity
+00147.jpg/Cardiomegaly/Lung Opacity/Edema
+00148.jpg/Cardiomegaly/Lung Opacity/Edema/Pleural Effusion
+00149.jpg/Lung Opacity/Pleural Effusion
+00154.jpg/Enlarged Cardiomediastinum/Pleural Other
+00160.jpg/Cardiomegaly/Lung Opacity/Atelectasis
+00161.jpg/Atelectasis/Pleural Effusion/Fracture
+00162.jpg/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion/Fracture
+00166.jpg/Atelectasis/Pleural Effusion
+00173.jpg/Cardiomegaly/Lung Opacity/Consolidation/Atelectasis/Pleural Other
+00174.jpg/Cardiomegaly
+00182.jpg/Cardiomegaly/Consolidation
+00187.jpg/Enlarged Cardiomediastinum
+00188.jpg/Pleural Effusion
+00190.jpg/Cardiomegaly
+00197.jpg/Pneumothorax
+00200.jpg/Lung Opacity/Pleural Effusion
+00201.jpg/Enlarged Cardiomediastinum/Lung Opacity/Consolidation/Pneumonia/Atelectasis
+00202.jpg/Consolidation/Pleural Effusion
+00203.jpg
+00208.jpg
+00210.jpg/Lung Opacity/Pleural Effusion
+00218.jpg
+00220.jpg
+00232.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pneumonia/Pleural Effusion
+00237.jpg/Consolidation/Pleural Effusion
+00244.jpg/Pleural Effusion
+00264.jpg/Lung Lesion/Pleural Effusion
+00266.jpg/Cardiomegaly
+00270.jpg/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00272.jpg/Lung Opacity/Lung Lesion/Pleural Effusion
+00273.jpg/Lung Lesion/Pleural Effusion/Pleural Other
+00275.jpg
+00285.jpg/Edema/Pleural Effusion
+00290.jpg/Lung Opacity/Pneumonia/Atelectasis/Pneumothorax/Pleural Effusion
+00297.jpg/Cardiomegaly
+00299.jpg/Atelectasis
+00305.jpg/Cardiomegaly/Edema/Consolidation/Pleural Effusion
+00314.jpg
+00317.jpg
+00332.jpg
+00338.jpg
+00339.jpg/Lung Opacity/Edema/Consolidation/Atelectasis
+00348.jpg/Lung Lesion/Edema
+00351.jpg/Enlarged Cardiomediastinum/Cardiomegaly/Lung Opacity/Pneumonia
+00357.jpg/Enlarged Cardiomediastinum
+00359.jpg/Lung Opacity/Lung Lesion/Fracture
+00366.jpg
+00369.jpg
+00370.jpg/Cardiomegaly/Lung Opacity/Atelectasis/Pleural Effusion/Pleural Other
+00371.jpg/Cardiomegaly/Lung Opacity/Consolidation/Pneumothorax/Pleural Effusion/Pleural Other
+00372.jpg/Lung Opacity/Atelectasis/Pleural Effusion/Pleural Other
+00375.jpg/Pleural Effusion
+00381.jpg/Consolidation
+00383.jpg/Pleural Effusion/Pleural Other/Fracture
+00386.jpg/Lung Lesion/Pleural Effusion
+00394.jpg
+00400.jpg/Lung Opacity/Lung Lesion/Pleural Effusion
+00402.jpg/Lung Opacity/Pneumonia
+00403.jpg/Lung Opacity/Atelectasis
+00404.jpg
+00405.jpg/Lung Opacity/Pneumonia/Pleural Effusion
+00407.jpg/Lung Opacity/Atelectasis/Pleural Effusion
+00410.jpg/Lung Opacity/Atelectasis/Pleural Other
+00423.jpg/Edema/Consolidation/Pleural Effusion
+00428.jpg/Cardiomegaly/Edema
+00430.jpg/Lung Opacity/Pleural Effusion
+00431.jpg/Pleural Other
+00435.jpg/Enlarged Cardiomediastinum/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00436.jpg/Lung Opacity/Pneumonia/Atelectasis
+00439.jpg/Lung Opacity/Pleural Effusion
+00446.jpg/Cardiomegaly/Lung Opacity/Lung Lesion/Consolidation/Pneumonia
+00451.jpg/Cardiomegaly/Edema/Consolidation
+00454.jpg/Cardiomegaly/Lung Opacity/Edema/Pleural Effusion
+00459.jpg/Cardiomegaly/Edema
+00460.jpg/Enlarged Cardiomediastinum/Pleural Effusion
+00467.jpg/Edema
+00468.jpg/Lung Opacity/Pleural Other
+00474.jpg/Lung Opacity
+00477.jpg/Fracture
+00482.jpg/Atelectasis
+00486.jpg/Lung Opacity/Atelectasis/Pleural Effusion
+00489.jpg
+00494.jpg/Lung Opacity/Lung Lesion/Consolidation/Atelectasis/Pleural Effusion
+00495.jpg/Lung Opacity
+00501.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pneumonia/Fracture
+00505.jpg/Consolidation/Pneumothorax/Pleural Other
+00506.jpg/Consolidation/Atelectasis/Pleural Effusion
+00507.jpg/Lung Opacity/Consolidation/Pneumonia/Atelectasis/Pneumothorax/Pleural Effusion
+00510.jpg/Lung Opacity/Lung Lesion/Pneumonia
+00512.jpg/Consolidation/Atelectasis/Pleural Effusion
+00513.jpg/Lung Opacity/Pleural Effusion
+00514.jpg/Cardiomegaly/Pneumonia/Atelectasis/Pleural Effusion
+00520.jpg/Cardiomegaly
+00522.jpg/Lung Opacity
+00527.jpg/Fracture
+00529.jpg/Cardiomegaly/Fracture
+00530.jpg/Lung Opacity/Pneumonia/Atelectasis/Pleural Effusion
+00531.jpg/Enlarged Cardiomediastinum/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00534.jpg/Lung Opacity
+00535.jpg/Consolidation/Pneumothorax/Pleural Effusion
+00538.jpg/Enlarged Cardiomediastinum/Lung Opacity/Atelectasis
+00539.jpg/Lung Opacity/Edema/Pleural Other
+00540.jpg/Lung Opacity/Pneumonia
+00553.jpg/Pleural Effusion
+00554.jpg/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00555.jpg/Pneumothorax
+00557.jpg/Lung Opacity/Lung Lesion
+00566.jpg/Consolidation/Pneumothorax/Pleural Effusion
+00570.jpg/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00574.jpg/Lung Opacity/Consolidation/Atelectasis
+00581.jpg/Cardiomegaly/Lung Opacity/Atelectasis
+00586.jpg/Pleural Effusion
+00588.jpg/Lung Opacity/Pneumonia
+00589.jpg/Cardiomegaly
+00594.jpg/Cardiomegaly/Lung Opacity/Pneumonia/Pleural Effusion/Pleural Other
+00598.jpg/Lung Opacity/Consolidation/Pleural Effusion/Fracture
+00603.jpg/Lung Opacity/Consolidation/Atelectasis
+00605.jpg/Pleural Other
+00606.jpg/Pleural Effusion/Pleural Other
+00608.jpg/Lung Opacity/Pneumonia/Atelectasis
+00610.jpg/Lung Opacity/Consolidation/Atelectasis
+00616.jpg
+00618.jpg/Cardiomegaly/Pleural Effusion
+00620.jpg/Consolidation/Atelectasis
+00623.jpg/Edema
+00625.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pleural Effusion
+00627.jpg/Consolidation/Atelectasis/Pleural Effusion
+00631.jpg/Lung Opacity/Atelectasis/Pleural Effusion/Fracture
+00632.jpg
+00633.jpg/Enlarged Cardiomediastinum/Lung Opacity/Edema/Pleural Effusion
+00643.jpg/Cardiomegaly/Edema
+00644.jpg/Cardiomegaly/Lung Opacity/Edema
+00647.jpg/Atelectasis
+00664.jpg/Lung Opacity/Consolidation/Atelectasis/Pleural Effusion
+00665.jpg/Cardiomegaly/Atelectasis/Pleural Effusion/Fracture
+00670.jpg
+00675.jpg/Pneumonia/Pneumothorax/Pleural Effusion
+00681.jpg/Cardiomegaly/Pleural Effusion
+00697.jpg/Enlarged Cardiomediastinum/Cardiomegaly
+00700.jpg/Atelectasis/Pleural Effusion
+00710.jpg/Atelectasis/Pneumothorax/Pleural Effusion/Fracture
+00724.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pneumothorax
+00739.jpg/Fracture
+00740.jpg/Edema
+00742.jpg/Cardiomegaly/Edema
+00743.jpg/Cardiomegaly/Edema
+00748.jpg/Pleural Effusion
+00751.jpg/Pleural Effusion
+00756.jpg/Cardiomegaly/Lung Opacity/Edema/Consolidation/Atelectasis/Pleural Effusion
+00760.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pneumothorax
+00767.jpg/Lung Opacity/Atelectasis
+00770.jpg/Lung Opacity/Edema/Atelectasis/Pleural Effusion
+00774.jpg/Cardiomegaly/Lung Opacity/Edema/Consolidation/Atelectasis/Pleural Effusion
+00776.jpg/Cardiomegaly/Lung Opacity/Atelectasis/Pleural Effusion
+00779.jpg/Fracture
+00784.jpg/Lung Opacity/Pneumothorax/Pleural Other
+00785.jpg/Lung Opacity/Atelectasis/Pneumothorax/Pleural Other
+00803.jpg/Enlarged Cardiomediastinum/Atelectasis/Pleural Effusion
+00804.jpg/Pleural Effusion
+00806.jpg/Pleural Effusion
+00809.jpg/Consolidation/Pneumonia
+00811.jpg
+00817.jpg/Atelectasis/Pneumothorax/Pleural Effusion
+00820.jpg/Enlarged Cardiomediastinum/Edema/Consolidation/Pleural Effusion
+00822.jpg/Lung Opacity/Atelectasis/Pleural Effusion
+00830.jpg/Lung Opacity/Lung Lesion/Consolidation
+00834.jpg/Enlarged Cardiomediastinum/Pleural Effusion
+00849.jpg/Atelectasis/Fracture
+00853.jpg/Lung Opacity/Pleural Effusion
+00856.jpg/Pleural Effusion
+00861.jpg/Enlarged Cardiomediastinum
+00862.jpg/Fracture
+00869.jpg/Cardiomegaly
+00875.jpg
+00877.jpg/Lung Opacity/Edema/Pneumonia
+00878.jpg/Enlarged Cardiomediastinum
+00881.jpg/Pleural Effusion
+00883.jpg/Pneumonia
+00885.jpg/Lung Opacity/Pleural Effusion
+00892.jpg/Pleural Effusion
+00896.jpg/Lung Opacity/Pneumonia
+00899.jpg/Atelectasis/Pneumothorax
+00902.jpg/Pleural Effusion
+00903.jpg/Lung Opacity/Consolidation/Atelectasis
+00906.jpg/Lung Opacity/Consolidation/Atelectasis
+00910.jpg/Pneumothorax
+00920.jpg/Pleural Effusion
+00924.jpg/Lung Opacity/Lung Lesion/Pleural Effusion/Pleural Other
+00926.jpg/Atelectasis/Pleural Effusion
+00929.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pleural Effusion/Fracture
+00936.jpg/Lung Opacity/Pneumonia
+00940.jpg/Enlarged Cardiomediastinum/Lung Opacity/Pleural Effusion
+00946.jpg/Lung Opacity/Consolidation/Pneumonia/Atelectasis/Pleural Effusion
+00956.jpg/Lung Lesion/Consolidation/Pleural Effusion
+00960.jpg
+00963.jpg/Atelectasis/Pleural Effusion
+00965.jpg/Lung Opacity/Consolidation/Pneumonia
+00966.jpg/Lung Opacity/Edema/Atelectasis/Pleural Effusion
+00969.jpg/Consolidation/Atelectasis/Pneumothorax
+00971.jpg/Enlarged Cardiomediastinum/Lung Opacity/Lung Lesion
+00972.jpg/Atelectasis/Pleural Effusion
+00974.jpg/Cardiomegaly
+00982.jpg
+00988.jpg/Enlarged Cardiomediastinum/Lung Opacity
+00991.jpg/Lung Opacity/Pneumothorax
+00998.jpg/Lung Opacity/Atelectasis/Pleural Other
