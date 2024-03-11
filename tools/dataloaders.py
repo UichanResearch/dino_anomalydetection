@@ -10,8 +10,8 @@ from matplotlib import pyplot as plt
 import random
 import copy
 
-class CheXpert(torch.utils.data.Dataset):
-    def __init__(self, root = "data", mode = 'train', img_size=(128, 128), normalize=False, enable_transform=True, full=True):
+class CheXpert(Dataset):
+    def __init__(self, root = "data", mode = 'train', img_size=(224, 224), normalize=False, enable_transform=True, full=True):
 
         self.data = []
         self.mode = mode
@@ -75,7 +75,9 @@ class CheXpert(torch.utils.data.Dataset):
     def __getitem__(self, index):
         img, label = copy.deepcopy(self.data[index])
         img = Image.open(img).resize(self.img_size)
+        img = img.convert("L")
         img = self.transforms(img)
+        img = img.repeat(3, 1, 1)
         if self.normalize:
             img -= self.mean
             img /= self.std
@@ -84,8 +86,8 @@ class CheXpert(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data)
 
-class zhanglab(torch.utils.data.Dataset):
-    def __init__(self, root = "data", mode = 'train', img_size=(256, 256), normalize=False, enable_transform=True, full=True):
+class zhanglab(Dataset):
+    def __init__(self, root = "data", mode = 'train', img_size=(224, 224), normalize=False, enable_transform=True, full=True):
 
         self.data = []
         self.mode = mode
@@ -123,6 +125,7 @@ class zhanglab(torch.utils.data.Dataset):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'zhanglab/val/normal_256', item), 0))
+
             items = os.listdir(os.path.join(self.root, 'zhanglab/val/pneumonia_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
@@ -137,6 +140,7 @@ class zhanglab(torch.utils.data.Dataset):
                     break
                 self.data.append((os.path.join(self.root, 'zhanglab/test/normal_256', item), 0))
             items = os.listdir(os.path.join(self.root, 'zhanglab/test/pneumonia_256'))
+            
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
@@ -148,8 +152,11 @@ class zhanglab(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         img, label = copy.deepcopy(self.data[index])
-        img = Image.open(img).resize(self.img_size)
+        img = Image.open(img)
+        img = img.convert("L")
+        img = img.resize(self.img_size)
         img = self.transforms(img)
+        img = img.repeat(3, 1, 1)
         if self.normalize:
             img -= self.mean
             img /= self.std

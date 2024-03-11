@@ -21,7 +21,15 @@ class DinoEncoder(nn.Module):
             output:
             batch,14,14,feature크기 vector
         """
-        x = self.encoder.forward_features(x)['x_norm_patchtokens']
-        x = x.reshape(x.shape[0],16,16,-1)
+        
+        result = self.encoder.forward_features(x)
+        x_patch = result['x_norm_patchtokens']
+        x_cls = result['x_norm_clstoken'].reshape(result['x_norm_clstoken'].shape[0],1,-1)
+        x = torch.concat((x_cls,x_patch),dim = 1)
         return x
     
+if __name__ == "__main__":
+    En = DinoEncoder()
+    img = torch.zeros(1,3,224,224).to("cuda")
+    result = En(img)
+    print(result.shape)

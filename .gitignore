@@ -1,0 +1,14 @@
+# python
+__pycache__/
+
+# test files
+temp*
+
+#data
+data
+result
+Thirdparty
+
+#log setting
+setting/
+wandb
