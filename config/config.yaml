@@ -1,0 +1,18 @@
+# project args
+file name: "chexpert1"
+caption: "defalt"
+device: "cuda:0"
+
+#wandb args
+entity : "uichan980202"
+project : "DinoAE with chexpert"
+dataset : "chexpert"
+architecture : "basic_Dino"
+
+# train args
+batch: 8
+epoch: 300
+learning rate: 0.0001
+
+#model args
+

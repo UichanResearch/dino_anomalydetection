@@ -50,12 +50,28 @@ class CheXpert(Dataset):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'chexpert/val_256/normal_256', item), 0))
+
             items = os.listdir(os.path.join(self.root, 'chexpert/val_256/abnormal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'chexpert/val_256/abnormal_256', item), 1))
-
+        
+        #normal
+        elif self.mode == 'normal':
+            items = os.listdir(os.path.join(self.root, 'chexpert/val_256/normal_256'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'chexpert/val_256/normal_256', item), 0))
+        
+        #abnormal
+        elif self.mode == 'abnormal':
+            items = os.listdir(os.path.join(self.root, 'chexpert/val_256/abnormal_256'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'chexpert/val_256/abnormal_256', item), 1))
         #test
         else:
             items = os.listdir(os.path.join(self.root, 'chexpert/test_256/normal_256'))
@@ -126,6 +142,22 @@ class zhanglab(Dataset):
                     break
                 self.data.append((os.path.join(self.root, 'zhanglab/val/normal_256', item), 0))
 
+            items = os.listdir(os.path.join(self.root, 'zhanglab/val/pneumonia_256'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'zhanglab/val/pneumonia_256', item), 1))
+
+        #normal
+        elif self.mode == 'normal':
+            items = os.listdir(os.path.join(self.root, 'zhanglab/val/normal_256'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'zhanglab/val/normal_256', item), 0))
+
+        #abnormal
+        elif self.mode == 'abnormal':
             items = os.listdir(os.path.join(self.root, 'zhanglab/val/pneumonia_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:

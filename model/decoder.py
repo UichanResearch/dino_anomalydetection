@@ -82,9 +82,6 @@ class ViTDecoder(nn.Module):
         # embed tokens
         x = self.decoder_embed(x)
 
-        # append mask tokens to sequence
-        mask_tokens = self.mask_token.repeat(x.shape[0], x.shape[1], 1)
-
         # add pos embed
         x = x + self.decoder_pos_embed
 

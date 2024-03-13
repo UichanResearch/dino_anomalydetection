@@ -1,54 +1,82 @@
 from model.DinoAE import *
-from tools.dataloaders import zhanglab
+from tools.dataloaders import zhanglab,CheXpert
 from torch.utils.data import DataLoader
 
 from tools.make_dir import make_dir
+from tools.set_random_seed import set_random_seed
+set_random_seed(42)
 
 import os
+import yaml
+import argparse
+import math
+
+import wandb
 import numpy as np
 import torch
-import wandb
 import matplotlib.pyplot as plt
+
 from tqdm import tqdm
 
-#-----------------------wandb option------------------------
-entity = 'uichan980202'
+#arg
+parser = argparse.ArgumentParser()
+parser.add_argument('config',nargs='?', default='config.yaml' ,type=str, help='config yaml')
+args = parser.parse_args()
 
-project = 'DinoAE with zhang'
+# load args
+with open(os.path.join("config",args.config), 'r') as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
 
-config={
-"architecture": "basic_Dino",
-"dataset": "zhang",
-}
+# wandb option
+wandb.init(project = config["project"],
+           entity = config["entity"],
+           config = config)
+wandb.run.name = config["file name"]
 
-wandb.init(project = project, entity = entity, config = config)
-wandb.run.name = 'run2'
-#-------------------------------------------------------------
+# model option
+DATA = config["dataset"]
+NAME = config["file name"]
+DEVICE = config["device"]
+BATCH = config["batch"]
+EPOCH = config["epoch"]
+lr = config["learning rate"]
 
-NAME = "try2"
-DEVICE = "cuda:0"
-BATCH = 2
-EPOCH = 90
-lr = 1e-4
-
+#init
 make_dir(NAME)
 
-train_data = DataLoader(zhanglab(mode = "train"), batch_size=BATCH, shuffle=True, num_workers=2)
-val_data = DataLoader(zhanglab(mode = "val"), batch_size=BATCH, shuffle=False, num_workers=2)
+# load data
+if DATA == "zhang":
+    train_data = DataLoader(zhanglab(mode = "train"), batch_size=BATCH, shuffle=True, num_workers=2)
+    val_normal_data = DataLoader(zhanglab(mode = "normal"), batch_size=BATCH, shuffle=False, num_workers=2)
+    val_abnormal_data = DataLoader(zhanglab(mode = "abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
 
-model = DinoAE2().to(DEVICE)
+elif DATA == "chexpert":
+    train_data = DataLoader(CheXpert(mode = "train"), batch_size=BATCH, shuffle=True, num_workers=2)
+    val_normal_data = DataLoader(CheXpert(mode = "normal"), batch_size=BATCH, shuffle=False, num_workers=2)
+    val_abnormal_data = DataLoader(CheXpert(mode = "abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
+
+# model
+model = DinoAE2(device=DEVICE).to(DEVICE)
+
+# optimizer
 optimizer = opt = torch.optim.Adam(model.parameters(), lr=lr, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max= 300, eta_min= lr * 0.2)
 
+#loss
 recon_img_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 recon_mask_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 feature_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 
-
 best_val_loss = 100
 for e in range(EPOCH):
+    print(e)
+    #train
     model.train()
     train_loss = 0
+    total_recon_img = 0
+    total_recon_mask = 0
+    total_feature = 0
+
     for data, label in tqdm(train_data):
         optimizer.zero_grad()
         data = data.to(DEVICE)
@@ -58,48 +86,86 @@ for e in range(EPOCH):
         result = model(data)
 
         recon_img_loss = recon_img_criterion(result["recon_with_img"],img)
-        recon_img_loss.backward(retain_graph=True)
-        recon_img_loss = float(recon_img_loss)/BATCH
-
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
-        recon_mask_loss.backward(retain_graph=True)
-        recon_mask_loss = float(recon_mask_loss)/BATCH
-
         feature_loss = feature_criterion(result["feature1"],result["feature2"])
-        feature_loss.backward(retain_graph=True)
-        feature_loss = float(feature_loss)/BATCH
-        
-        train_loss += recon_img_loss + recon_mask_loss + feature_loss
+
+        loss = recon_img_loss + recon_mask_loss + feature_loss
+        loss.backward()
         optimizer.step()
 
-    wandb.log({"train_total":train_loss,"recon_img":recon_img_loss,"recon_mask":recon_mask_loss,"feature":feature_loss})
+        train_loss += float(loss)/len(label)
+        total_recon_img += float(recon_img_loss)/len(label) 
+        total_recon_mask += float(recon_mask_loss)/len(label)
+        total_feature += float(feature_loss)/len(label)
+    
+    train_img = img[0][0].cpu().detach().numpy()
+    train_recon_img = result["recon_with_img"][0][0].cpu().detach().numpy()
+    train_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
+    train_result = np.hstack([train_img,train_recon_img,train_recon_mask])
 
+    # val
     model.eval()
     val_loss = 0
-    for data, label in tqdm(val_data):
+    val_normal = 0
+    val_abnormal = 0
+
+    for data, label in tqdm(val_normal_data): #normal
         data = data.to(DEVICE)
         label = label.to(DEVICE)
         img = data[:,0:1,...]
 
         result = model(data)
 
-        recon_loss = recon_img_criterion(result["recon_with_mask"],img)
-        val_loss += float(recon_loss)/BATCH
+        recon_loss_v = recon_img_criterion(result["recon_with_mask"],img)
+        val_normal += float(recon_loss_v)/len(label)
+        val_loss += float(recon_loss_v)/len(label)
 
+    normal_img = img[0][0].cpu().detach().numpy()
+    normal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
+    residual_img = np.abs(normal_img - normal_recon_mask)
+    normal_result = np.hstack([normal_img,normal_recon_mask,residual_img])
     
-    print(f"epoch : {e}")
-    print(f"train loss : {train_loss}")
-    print(f"val loss : {val_loss}")
+    for data, label in tqdm(val_abnormal_data): # abnormal
+        data = data.to(DEVICE)
+        label = label.to(DEVICE)
+        img = data[:,0:1,...]
 
-    num = str(1000+e)[1:]
-    target_img = img[0][0].cpu().detach().numpy()
-    recon_img = result["recon_with_mask"][0][0].cpu().detach().numpy()
-    residual_img = np.abs(target_img - recon_img)
-    plt.imsave(os.path.join("result",NAME,"imgs",num+".png"),np.hstack([target_img,recon_img,residual_img]))
+        result = model(data)
+
+        recon_loss_v = recon_img_criterion(result["recon_with_mask"],img)
+        val_abnormal += float(recon_loss_v)/len(label)
+        val_loss += float(recon_loss_v)/len(label)
+
+    abnormal_img = img[0][0].cpu().detach().numpy()
+    abnormal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
+    residual_img = np.abs(abnormal_img - abnormal_recon_mask)
+    abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,residual_img])
+
+    #save result
+    num = str(1000+e+1)[1:]
+    plt.imsave(os.path.join("result",NAME,"imgs",num+".png"),np.vstack([train_result,normal_result,abnormal_result]))
+
+    #save model
+    torch.save(model.state_dict(), os.path.join("result",NAME,"model","last.pth"))
     if val_loss <= best_val_loss:
         torch.save(model.state_dict(), os.path.join("result",NAME,"model","best.pth"))
         best_val_loss = val_loss
-    wandb.log({"val_total":val_loss})
+
+    wandb.log({
+        #train loss
+        "train_total":train_loss,
+        "recon_img":total_recon_img,
+        "recon_mask":total_recon_mask,
+        "feature":total_feature,
+
+        #val loss
+        "val_total":val_loss,
+        "val_normal":val_normal,
+        "val_abnormal":val_abnormal
+        })
+    
+    if math.isnan(train_loss):
+        break
 
 
 
