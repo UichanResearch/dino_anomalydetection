@@ -1,12 +1,12 @@
 # project args
-file name: "chexpert4"
+file name: "zhang2"
 caption: "defalt"
-device: "cuda:0"
+device: "cuda:1"
 
 #wandb args
 entity : "uichan980202"
-project : "DinoAE with chexpert"
-dataset : "chexpert"
+project : "DinoAE with zhang"
+dataset : "zhang"
 architecture : "basic Dino + Mem matrix"
 
 # train args

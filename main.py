@@ -1,5 +1,5 @@
 from model.DinoAE import *
-from tools.dataloaders import zhanglab,CheXpert
+from tools.dataloaders import load_data
 from torch.utils.data import DataLoader
 
 from tools.make_dir import make_dir
@@ -45,18 +45,12 @@ lr = config["learning rate"]
 make_dir(NAME)
 
 # load data
-if DATA == "zhang":
-    train_data = DataLoader(zhanglab(mode = "train"), batch_size=BATCH, shuffle=True, num_workers=2)
-    val_normal_data = DataLoader(zhanglab(mode = "normal"), batch_size=BATCH, shuffle=False, num_workers=2)
-    val_abnormal_data = DataLoader(zhanglab(mode = "abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
-
-elif DATA == "chexpert":
-    train_data = DataLoader(CheXpert(mode = "train"), batch_size=BATCH, shuffle=True, num_workers=2)
-    val_normal_data = DataLoader(CheXpert(mode = "normal"), batch_size=BATCH, shuffle=False, num_workers=2)
-    val_abnormal_data = DataLoader(CheXpert(mode = "abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
+train_data = DataLoader(load_data(DATA,"train"), batch_size=BATCH, shuffle=True, num_workers=2)
+val_normal_data = DataLoader(load_data(DATA,"val_normal"), batch_size=BATCH, shuffle=False, num_workers=2)
+val_abnormal_data = DataLoader(load_data(DATA,"val_abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
 
 # model
-model = DinoAE2(device=DEVICE).to(DEVICE)
+model = DinoAE(device=DEVICE).to(DEVICE)
 
 # optimizer
 optimizer = opt = torch.optim.Adam(model.parameters(), lr=lr, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
@@ -89,7 +83,7 @@ for e in range(EPOCH):
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
         feature_loss = feature_criterion(result["feature1"],result["feature2"])
 
-        loss = recon_img_loss + recon_mask_loss + feature_loss
+        loss = recon_img_loss + recon_mask_loss + feature_loss + result["f_loss"]
         loss.backward()
         optimizer.step()
 

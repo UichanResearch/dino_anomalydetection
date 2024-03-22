@@ -58,7 +58,7 @@ class CheXpert(Dataset):
                 self.data.append((os.path.join(self.root, 'chexpert/val_256/abnormal_256', item), 1))
         
         #normal
-        elif self.mode == 'normal':
+        elif self.mode == 'val_normal':
             items = os.listdir(os.path.join(self.root, 'chexpert/val_256/normal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
@@ -66,19 +66,21 @@ class CheXpert(Dataset):
                 self.data.append((os.path.join(self.root, 'chexpert/val_256/normal_256', item), 0))
         
         #abnormal
-        elif self.mode == 'abnormal':
+        elif self.mode == 'val_abnormal':
             items = os.listdir(os.path.join(self.root, 'chexpert/val_256/abnormal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'chexpert/val_256/abnormal_256', item), 1))
         #test
-        else:
+        elif self.mode == 'test_normal':
             items = os.listdir(os.path.join(self.root, 'chexpert/test_256/normal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'chexpert/test_256/normal_256', item), 0))
+
+        elif self.mode == 'test_abnormal':
             items = os.listdir(os.path.join(self.root, 'chexpert/test_256/abnormal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
@@ -148,16 +150,14 @@ class zhanglab(Dataset):
                     break
                 self.data.append((os.path.join(self.root, 'zhanglab/val/pneumonia_256', item), 1))
 
-        #normal
-        elif self.mode == 'normal':
+        elif self.mode == 'val_normal':
             items = os.listdir(os.path.join(self.root, 'zhanglab/val/normal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'zhanglab/val/normal_256', item), 0))
 
-        #abnormal
-        elif self.mode == 'abnormal':
+        elif self.mode == 'val_abnormal':
             items = os.listdir(os.path.join(self.root, 'zhanglab/val/pneumonia_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
@@ -165,14 +165,15 @@ class zhanglab(Dataset):
                 self.data.append((os.path.join(self.root, 'zhanglab/val/pneumonia_256', item), 1))
 
         #test
-        else:
+        elif self.mode == 'test_normal':
             items = os.listdir(os.path.join(self.root, 'zhanglab/test/normal_256'))
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
                 self.data.append((os.path.join(self.root, 'zhanglab/test/normal_256', item), 0))
+
+        elif self.mode == 'test_abnormal':
             items = os.listdir(os.path.join(self.root, 'zhanglab/test/pneumonia_256'))
-            
             for idx, item in enumerate(items):
                 if not self.full and idx > 9:
                     break
@@ -196,6 +197,13 @@ class zhanglab(Dataset):
 
     def __len__(self):
         return len(self.data)
+    
+def load_data(dataset = "chexpert", type = "test_normal"):
+    if dataset == "chexpert":
+        return CheXpert(mode = type)
+    elif dataset == "zhang":
+        return zhanglab(mode = type)
+
 
 if __name__ == "__main__":
     data = zhanglab(mode = "train")

@@ -1,13 +1,13 @@
 # project args
-file name: "chexpert4"
+file name: "chexpert6"
 caption: "defalt"
-device: "cuda:0"
+device: "cuda:2"
 
 #wandb args
 entity : "uichan980202"
 project : "DinoAE with chexpert"
 dataset : "chexpert"
-architecture : "basic Dino + Mem matrix"
+architecture : "basic Dino + Mem matrix in decoder"
 
 # train args
 batch: 8
