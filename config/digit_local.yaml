@@ -1,5 +1,5 @@
 # project args
-file name: "digit_local1"
+file name: "digit_local4"
 caption: "defalt"
 device: "cuda:0"
 
@@ -7,7 +7,7 @@ device: "cuda:0"
 entity : "uichan980202"
 project : "DinoAE with digit_local"
 dataset : "digit_local"
-architecture : "basic Dino + MAE"
+architecture : "basic Dino + MAE  + BN"
 
 # train args
 batch: 8

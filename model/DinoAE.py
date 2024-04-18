@@ -6,17 +6,34 @@ import random
     
 class DinoAE(nn.Module): #constrtive learn
     def __init__(self,device = "cuda"):
+        # img = torch.zeros(16,3,224,224).to("cuda")
         super().__init__()
         self.device = device
         self.En = DinoEncoder().to(device)
         self.De = ViTDecoder(device = device).to(device)
+
+        self.mask1,self.mask2 = self.gen_img_mask()
+        self.mask1 = self.mask1.to(device)
+        self.mask2 = self.mask2.to(device)
     
     def forward(self,x,random_mask = False):
+        x1 = x.clone()
+        x2 = x.clone()
+        if random_mask:
+            self.gen_img_mask(random_mask=True)
+        x1 *= self.mask1
+        x2 *= self.mask2
 
-        feature = self.En(x)
-        out = self.De(feature)
+        feature1 = self.En(x1)
+        feature2 = self.En(x2)
+
+        x1,x2,f_loss = self.De(feature1,feature2)
         
-        return {"feature":feature,"out":out}
+
+        recon_i = x1 * self.mask1 + x2 * self.mask2
+        recon_m = x1 * self.mask2 + x2 * self.mask1
+        
+        return {"feature1":feature1,"feature2":feature2,"recon_with_img":recon_i,"recon_with_mask":recon_m, "f_loss":f_loss}
     
     @staticmethod
     def gen_img_mask(random_mask = False):
@@ -51,4 +68,3 @@ if __name__ == "__main__":
     plt.imsave("a.jpg",a.mask1())
 
     
-

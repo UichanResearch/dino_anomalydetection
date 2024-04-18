@@ -199,7 +199,7 @@ class zhanglab(Dataset):
         return len(self.data)
 
 class digit_local(Dataset):
-    def __init__(self, root = "data", mode = 'train', img_size=(224, 224), normalize=False, enable_transform=True, full=True):
+    def __init__(self, root = "data", mode = 'train', img_size=(224, 224), normalize=True, enable_transform=True, full=True):
 
         self.data = []
         self.mode = mode
@@ -282,8 +282,7 @@ class digit_local(Dataset):
         img = self.transforms(img)
         img = img.repeat(3, 1, 1)
         if self.normalize:
-            img -= self.mean
-            img /= self.std
+            img /= img.max()
         return img, (torch.zeros((1,)) + label).long()
 
     def __len__(self):
