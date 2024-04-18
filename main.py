@@ -23,15 +23,19 @@ parser = argparse.ArgumentParser()
 parser.add_argument('config',nargs='?', default='config.yaml' ,type=str, help='config yaml')
 args = parser.parse_args()
 
+SAVE_RESULT = True
+WAND_LOG = True
+
 # load args
 with open(os.path.join("config",args.config), 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 
 # wandb option
-wandb.init(project = config["project"],
-           entity = config["entity"],
-           config = config)
-wandb.run.name = config["file name"]
+if WAND_LOG:
+    wandb.init(project = config["project"],
+            entity = config["entity"],
+            config = config)
+    wandb.run.name = config["file name"]
 
 # model option
 DATA = config["dataset"]
@@ -42,7 +46,8 @@ EPOCH = config["epoch"]
 lr = config["learning rate"]
 
 #init
-make_dir(NAME)
+if SAVE_RESULT:
+    make_dir(NAME)
 
 # load data
 train_data = DataLoader(load_data(DATA,"train"), batch_size=BATCH, shuffle=True, num_workers=2)
@@ -60,6 +65,7 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max= 300, eta_min=
 recon_img_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 recon_mask_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 feature_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
+new_feature_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 
 best_val_loss = 100
 for e in range(EPOCH):
@@ -82,8 +88,11 @@ for e in range(EPOCH):
         recon_img_loss = recon_img_criterion(result["recon_with_img"],img)
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
         feature_loss = feature_criterion(result["feature1"],result["feature2"])
+        new_feature_loss = new_feature_criterion(result["new_feature1"],result["new_feature2"])
+        decoder_feature_loss = result["decoder_feature_loss"]
 
-        loss = recon_img_loss + recon_mask_loss + feature_loss + result["f_loss"]
+        #loss = recon_img_loss + recon_mask_loss + 0.5*feature_loss + new_feature_loss + decoder_feature_loss
+        loss = recon_img_loss + 0.5*feature_loss + decoder_feature_loss + new_feature_loss
         loss.backward()
         optimizer.step()
 

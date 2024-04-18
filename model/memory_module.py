@@ -10,7 +10,7 @@ import torch.nn.functional as F
 # 그냥 메모리를 patch num까지 구현해서, 패치 넘버 넣으면 알아서 space를 assign해주도록 구성
 
 class Memory(nn.Module):
-    def __init__(self,num_slots, slot_dim, patch_size = 16, top = 5):
+    def __init__(self,num_slots, slot_dim, patch_size = 16, top = 20):
         super(Memory, self).__init__()
         self.top = top
         self.patch_size = patch_size

@@ -1,7 +1,7 @@
 # project args
-file name: "chexpert6"
+file name: "chexpert9"
 caption: "defalt"
-device: "cuda:2"
+device: "cuda:1"
 
 #wandb args
 entity : "uichan980202"

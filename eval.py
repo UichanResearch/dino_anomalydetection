@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 DATA = "chexpert" #zhang chexperts
-PATH = "result/chexpert4"
+PATH = "result/chexpert6"
 BATCH = 8
 DEVICE = "cuda:0"
 
@@ -70,6 +70,8 @@ for data, label in tqdm(normal_data): #normal
     normal_result = np.hstack([normal_img,normal_recon_mask,residual_img1,normal_recon_img,residual_img2])
     num_str = str(num + 1000)[1:]
     plt.imsave(os.path.join(img_dir,"normal"+num_str+".png"),normal_result)
+    plt.scatter([num],[float(recon_loss_v)],c = 'b')
+    
 
 num = 0
 for data, label in tqdm(abnormal_data): # abnormal
@@ -94,6 +96,8 @@ for data, label in tqdm(abnormal_data): # abnormal
     abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,residual_img1,abnormal_recon_img,residual_img2])
     num_str = str(num + 1000)[1:]
     plt.imsave(os.path.join(img_dir,"abnormal"+num_str+".png"),abnormal_result)
+    plt.scatter([num],[float(recon_loss_v)],c = 'r')
+plt.savefig('fig.png')
 
 
 
