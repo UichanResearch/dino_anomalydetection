@@ -1,0 +1,18 @@
+# project args
+file name: "digit_local1"
+caption: "defalt"
+device: "cuda:0"
+
+#wandb args
+entity : "uichan980202"
+project : "DinoAE with digit_local"
+dataset : "digit_local"
+architecture : "basic Dino + MAE"
+
+# train args
+batch: 8
+epoch: 500
+learning rate: 0.0001
+
+#model args
+

@@ -57,14 +57,6 @@ class ViTDecoder(nn.Module):
 
         self.initialize_weights()
 
-        self.feature_mask1 = torch.zeros([1,self.patch_embed.num_patches,1]).to(device)
-        for i in range(self.patch_embed.num_patches):
-            if i % 2 == 0:
-                self.feature_mask1[0,i,0] = 1
-        self.feature_mask2 = torch.ones_like(self.feature_mask1).to(device) - self.feature_mask1
-        self.feature_black = torch.zeros([1,self.patch_embed.num_patches+1,1]).to(device)
-        self.feature_black[0,-1,0] = 1
-        self.feature_loss = torch.nn.MSELoss(reduction='mean').to(device)
 
     def initialize_weights(self):
         # initialization
@@ -94,58 +86,33 @@ class ViTDecoder(nn.Module):
             nn.init.constant_(m.bias, 0)
             nn.init.constant_(m.weight, 1.0)
 
-    def forward_decoder(self, x1, x2):
+    def forward_decoder(self, x):
         # embed tokens
-        x1 = self.decoder_embed(x1)
-        x2 = self.decoder_embed(x2)
+        x = self.decoder_embed(x)
 
         # add pos embed
-        x1 = x1 + self.decoder_pos_embed
-        x2 = x2 + self.decoder_pos_embed
+        x = x + self.decoder_pos_embed
 
         total_feature_loss = 0.0
         # apply Transformer blocks
         for i in range(self.decoder_depth-1):
-            x1 = self.decoder_blocks[i](x1)
-            x2 = self.decoder_blocks[i](x2)
-            cls_index = x1.shape[1]
-            x1_cls_tocken = x1[:, cls_index-1:cls_index, :]
-            x2_cls_tocken = x2[:, cls_index-1:cls_index, :]
+            x = self.decoder_blocks[i](x)
 
-            # image = x1[:, 1:, :]*self.feature_mask1 + x2[:, 1:, :]*self.feature_mask2
-            # masked = x1[:, 1:, :]*self.feature_mask2 + x2[:, 1:, :]*self.feature_mask1
-            # new_masked = []
-            # for j in range(masked.shape[1]):
-            #     result = self.memory_blocks[i](masked[:,j,:],j)
-            #     result = result.reshape([result.shape[0],1,-1])
-            #     new_masked.append(result)
-            # masked = torch.cat(new_masked,dim = 1)
-            total_feature_loss += self.feature_loss(x1,x2)
-            # x1 =  torch.cat([image*self.feature_mask1 + masked*self.feature_mask2,x1_cls_tocken],dim = 1)
-            # x2 =  torch.cat([image*self.feature_mask2 + masked*self.feature_mask1,x2_cls_tocken],dim = 1)
-            
-
-        x1 = self.decoder_blocks[-1](x1)
-        x2 = self.decoder_blocks[-1](x2)
-
-        x1 = self.decoder_norm(x1)
-        x2 = self.decoder_norm(x2)
+        x = self.decoder_blocks[-1](x)
+        x = self.decoder_norm(x)
 
         # predictor projection
-        x1 = self.decoder_pred(x1)
-        x2 = self.decoder_pred(x2)
+        x = self.decoder_pred(x)
 
         # remove cls token
-        x1 = x1[:, 1:, :]
-        x2 = x2[:, 1:, :]
+        x = x[:, 1:, :]
 
-        return x1,x2,total_feature_loss
+        return x
 
-    def forward(self, x1,x2):
-        x1,x2,loss = self.forward_decoder(x1,x2)  # [N, L, p*p*3]
-        x1 = unpatchify(x1) # B P*P 14 14
-        x2 = unpatchify(x2)
-        return x1,x2,loss
+    def forward(self, x):
+        x = self.forward_decoder(x)  # [N, L, p*p*3]
+        x = unpatchify(x) # B P*P 14 14
+        return x
 
 if __name__ == "__main__":
     model = ViTDecoder(

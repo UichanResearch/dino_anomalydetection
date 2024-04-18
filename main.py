@@ -57,9 +57,7 @@ optimizer = opt = torch.optim.Adam(model.parameters(), lr=lr, eps=1e-7, betas=(0
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max= 300, eta_min= lr * 0.2)
 
 #loss
-recon_img_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
-recon_mask_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
-feature_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
+recon = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 
 best_val_loss = 100
 for e in range(EPOCH):
@@ -67,9 +65,6 @@ for e in range(EPOCH):
     #train
     model.train()
     train_loss = 0
-    total_recon_img = 0
-    total_recon_mask = 0
-    total_feature = 0
 
     for data, label in tqdm(train_data):
         optimizer.zero_grad()
@@ -79,23 +74,18 @@ for e in range(EPOCH):
 
         result = model(data)
 
-        recon_img_loss = recon_img_criterion(result["recon_with_img"],img)
-        recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
-        feature_loss = feature_criterion(result["feature1"],result["feature2"])
+        recon_loss = recon(result["out"],img)
 
-        loss = recon_img_loss + recon_mask_loss + feature_loss + result["f_loss"]
+        loss = recon_loss
         loss.backward()
         optimizer.step()
 
         train_loss += float(loss)/len(label)
-        total_recon_img += float(recon_img_loss)/len(label) 
-        total_recon_mask += float(recon_mask_loss)/len(label)
-        total_feature += float(feature_loss)/len(label)
     
     train_img = img[0][0].cpu().detach().numpy()
-    train_recon_img = result["recon_with_img"][0][0].cpu().detach().numpy()
-    train_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
-    train_result = np.hstack([train_img,train_recon_img,train_recon_mask])
+    recon_img = result["out"][0][0].cpu().detach().numpy()
+    sub_img = np.abs(train_img - recon_img)
+    train_result = np.hstack([train_img,recon_img,sub_img])
 
     # val
     model.eval()
@@ -110,14 +100,14 @@ for e in range(EPOCH):
 
         result = model(data)
 
-        recon_loss_v = recon_img_criterion(result["recon_with_mask"],img)
+        recon_loss_v = recon(result["out"],img)
         val_normal += float(recon_loss_v)/len(label)
         val_loss += float(recon_loss_v)/len(label)
 
     normal_img = img[0][0].cpu().detach().numpy()
-    normal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
-    residual_img = np.abs(normal_img - normal_recon_mask)
-    normal_result = np.hstack([normal_img,normal_recon_mask,residual_img])
+    normal_recon_mask = result["out"][0][0].cpu().detach().numpy()
+    sub_img = np.abs(normal_img - normal_recon_mask)
+    normal_result = np.hstack([normal_img,normal_recon_mask,sub_img])
     
     for data, label in tqdm(val_abnormal_data): # abnormal
         data = data.to(DEVICE)
@@ -126,14 +116,14 @@ for e in range(EPOCH):
 
         result = model(data)
 
-        recon_loss_v = recon_img_criterion(result["recon_with_mask"],img)
+        recon_loss_v = recon(result["out"],img)
         val_abnormal += float(recon_loss_v)/len(label)
         val_loss += float(recon_loss_v)/len(label)
 
     abnormal_img = img[0][0].cpu().detach().numpy()
-    abnormal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
-    residual_img = np.abs(abnormal_img - abnormal_recon_mask)
-    abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,residual_img])
+    abnormal_recon_mask = result["out"][0][0].cpu().detach().numpy()
+    sub_img = np.abs(abnormal_img - abnormal_recon_mask)
+    abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,sub_img])
 
     #save result
     num = str(1000+e+1)[1:]
@@ -148,9 +138,6 @@ for e in range(EPOCH):
     wandb.log({
         #train loss
         "train_total":train_loss,
-        "recon_img":total_recon_img,
-        "recon_mask":total_recon_mask,
-        "feature":total_feature,
 
         #val loss
         "val_total":val_loss,
