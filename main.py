@@ -108,7 +108,7 @@ for e in range(EPOCH):
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
         feature_loss = feature_criterion(result["feature1"],result["feature2"])
 
-        loss = recon_img_loss + recon_mask_loss + feature_loss + result["f_loss"]
+        loss = recon_img_loss + feature_loss/(16*16+1) #recon_mask_loss #+ feature_loss/(16*16+1) #+ result["f_loss"]
         loss.backward()
         optimizer.step()
 

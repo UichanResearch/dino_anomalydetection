@@ -1,16 +1,16 @@
 # project args
-file name: "digit_local4"
+file name: "digit_local10"
 caption: "defalt"
-device: "cuda:0"
+device: "cuda:5"
 
 #wandb args
 entity : "uichan980202"
 project : "DinoAE with digit_local"
 dataset : "digit_local"
-architecture : "basic Dino + MAE  + BN"
+architecture : "basic Dino + MAE  + mask"
 
 # train args
-batch: 8
+batch: 16
 epoch: 500
 learning rate: 0.0001
 

@@ -18,21 +18,21 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 
-DATA = "chexpert" #zhang chexperts
-PATH = "result/chexpert4"
+DATA = "digit_local" #zhang chexperts
+PATH = "result/digit_local6"
 BATCH = 8
 DEVICE = "cuda:0"
 
 #dir
 img_dir = os.path.join(PATH,"test")
-#os.mkdir(img_dir)
+os.mkdir(img_dir)
 
 #data
 normal_data = DataLoader(load_data(DATA,"test_normal"), batch_size=BATCH, shuffle=False, num_workers=2)
 abnormal_data = DataLoader(load_data(DATA,"test_abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
 
 # model
-model = DinoAE(device=DEVICE).to(DEVICE)
+model = DinoAE(device=DEVICE).to(DEVICE).eval()
 state_dict = torch.load(os.path.join(PATH,"model","last.pth"))
 model.load_state_dict(state_dict)
 

@@ -270,7 +270,7 @@ class digit_local(Dataset):
                     break
                 self.data.append((os.path.join(self.root, 'digit_local/test/abnormal/img', item), 1))
         
-        print('Data:', "zhanglab")
+        print('Data:', "digit_local")
         print('Data len: ', len(self.data))
 
 
