@@ -168,9 +168,9 @@ for e in range(EPOCH):
 
     #save model
     torch.save(model.state_dict(), os.path.join("result",NAME,"model","last.pth"))
-    if val_loss <= best_val_loss:
+    if val_normal <= best_val_loss:
         torch.save(model.state_dict(), os.path.join("result",NAME,"model","best.pth"))
-        best_val_loss = val_loss
+        best_val_loss = val_normal
 
     wandb.log({
         #train loss
