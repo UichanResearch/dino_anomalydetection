@@ -1,13 +1,13 @@
 # project args
-file name: "digit_local10"
+file name: "digit_global3"
 caption: "defalt"
-device: "cuda:0"
+device: "cuda:3"
 
 #wandb args
 entity : "uichan980202"
-project : "DinoAE with digit_local"
-dataset : "digit_local"
-architecture : "only feature loss"
+project : "DinoAE with digit_global"
+dataset : "digit_global"
+architecture : "both loss"
 
 # train args
 batch: 16

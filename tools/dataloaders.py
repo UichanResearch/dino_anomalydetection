@@ -287,7 +287,96 @@ class digit_local(Dataset):
 
     def __len__(self):
         return len(self.data)
-    
+
+class digit_global(Dataset):
+    def __init__(self, root = "data", mode = 'train', img_size=(224, 224), normalize=True, enable_transform=True, full=True):
+
+        self.data = []
+        self.mode = mode
+        self.root = root
+        self.normalize = normalize
+        self.img_size = img_size
+        self.full = full
+
+        if self.mode == 'train':
+            if enable_transform:
+                self.transforms = transforms.Compose([
+                    transforms.ToTensor()
+                ])
+            else:
+                self.transforms = transforms.ToTensor()
+        else:
+            self.transforms = transforms.ToTensor()
+
+        self.load_data()
+
+    def load_data(self):
+        #train
+        if self.mode == 'train':
+            items = os.listdir(os.path.join(self.root, 'digit_global/train/normal/img'))
+            for item in items:
+                self.data.append((os.path.join(self.root, 'digit_global/train/normal/img', item), 0))
+
+        #val
+        elif self.mode == 'val':
+            items = os.listdir(os.path.join(self.root, 'digit_global/val/normal/img'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'digit_global/val/normal/img', item), 0))
+
+            items = os.listdir(os.path.join(self.root, 'digit_global/val/abnormal/img'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'digit_global/val/abnormal/img', item), 1))
+
+        elif self.mode == 'val_normal':
+            items = os.listdir(os.path.join(self.root, 'digit_global/val/normal/img'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'digit_global/val/normal/img', item), 0))
+
+        elif self.mode == 'val_abnormal':
+            items = os.listdir(os.path.join(self.root, 'digit_global/val/abnormal/img'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'digit_global/val/abnormal/img', item), 1))
+
+        #test
+        elif self.mode == 'test_normal':
+            items = os.listdir(os.path.join(self.root, 'digit_global/test/normal/img'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'digit_global/test/normal/img', item), 0))
+
+        elif self.mode == 'test_abnormal':
+            items = os.listdir(os.path.join(self.root, 'digit_global/test/abnormal/img'))
+            for idx, item in enumerate(items):
+                if not self.full and idx > 9:
+                    break
+                self.data.append((os.path.join(self.root, 'digit_global/test/abnormal/img', item), 1))
+        
+        print('Data:', "digit_global")
+        print('Data len: ', len(self.data))
+
+
+    def __getitem__(self, index):
+        img, label = copy.deepcopy(self.data[index])
+        img = Image.open(img)
+        img = img.convert("L")
+        img = img.resize(self.img_size)
+        img = self.transforms(img)
+        img = img.repeat(3, 1, 1)
+        if self.normalize:
+            img /= img.max()
+        return img, (torch.zeros((1,)) + label).long()
+
+    def __len__(self):
+        return len(self.data)
 
 def load_data(dataset = "chexpert", type = "test_normal"):
     if dataset == "chexpert":
@@ -296,6 +385,8 @@ def load_data(dataset = "chexpert", type = "test_normal"):
         return zhanglab(mode = type)
     elif dataset == "digit_local":
         return digit_local(mode = type)
+    elif dataset == "digit_global":
+        return digit_global(mode = type)
 
 
 if __name__ == "__main__":
