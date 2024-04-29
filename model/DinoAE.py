@@ -1,5 +1,6 @@
 from model.encoder import DinoEncoder
 from model.decoder import ViTDecoder
+from model.discriminator import Discriminator
 import torch.nn as nn
 import torch
 import random
@@ -11,6 +12,7 @@ class DinoAE(nn.Module): #constrtive learn
         self.device = device
         self.En = DinoEncoder().to(device)
         self.De = ViTDecoder(device = device).to(device)
+        self.Dis = Discriminator().to(device)
 
         self.mask1,self.mask2 = self.gen_img_mask()
         self.mask1 = self.mask1.to(device)
@@ -32,8 +34,18 @@ class DinoAE(nn.Module): #constrtive learn
 
         recon_i = x1 * self.mask1 + x2 * self.mask2
         recon_m = x1 * self.mask2 + x2 * self.mask1
+
+        dis_mask = torch.cat([x[:,0:1,...],recon_m],axis = 1)
+        dis_img = torch.cat([x[:,0:1,...],recon_i],axis = 1)
+        dis_input = torch.cat([dis_mask,dis_img])
+        A = self.Dis(dis_input)
+        A_mask = A[:dis_mask.shape[0]]
+        A_img = A[dis_mask.shape[0]:]
         
-        return {"feature1":feature1,"feature2":feature2,"recon_with_img":recon_i,"recon_with_mask":recon_m, "f_loss":f_loss}
+        return {"feature1":feature1,"feature2":feature2,
+                "recon_with_img":recon_i,"recon_with_mask":recon_m,
+                "f_loss":f_loss,
+                "A_mask":A_mask, "A_img":A_img}
     
     @staticmethod
     def gen_img_mask(random_mask = False):
@@ -65,6 +77,6 @@ class DinoAE(nn.Module): #constrtive learn
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     a = DinoAE()
-    plt.imsave("a.jpg",a.mask1())
+    a(torch.zeros([1,3,244,244]))
 
     
