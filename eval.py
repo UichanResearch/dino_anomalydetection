@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 DATA = "elip" #zhang chexperts
-PATH = "result/elip1"
+PATH = "result/elip2"
 BATCH = 1
 DEVICE = "cuda:0"
 
