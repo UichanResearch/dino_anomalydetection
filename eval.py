@@ -18,9 +18,9 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 
-DATA = "digit_global" #zhang chexperts
-PATH = "result/digit_global1"
-BATCH = 8
+DATA = "elip" #zhang chexperts
+PATH = "result/elip1"
+BATCH = 1
 DEVICE = "cuda:0"
 
 #dir

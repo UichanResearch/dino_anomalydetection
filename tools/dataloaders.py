@@ -281,7 +281,7 @@ class digit_local(Dataset):
         img = img.resize(self.img_size)
         img = self.transforms(img)
         img = img.repeat(3, 1, 1)
-        if self.normalize:
+        if self.normalize and img.max() >= 1:
             img /= img.max()
         return img, (torch.zeros((1,)) + label).long()
 
@@ -371,7 +371,7 @@ class digit_global(Dataset):
         img = img.resize(self.img_size)
         img = self.transforms(img)
         img = img.repeat(3, 1, 1)
-        if self.normalize:
+        if self.normalize and img.max() >= 1:
             img /= img.max()
         return img, (torch.zeros((1,)) + label).long()
 
@@ -460,7 +460,7 @@ class elip(Dataset):
         img = img.resize(self.img_size)
         img = self.transforms(img)
         img = img.repeat(3, 1, 1)
-        if self.normalize:
+        if self.normalize and img.max() >= 1:
             img /= img.max()
         return img, (torch.zeros((1,)) + label).long()
 
