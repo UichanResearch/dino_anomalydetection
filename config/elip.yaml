@@ -1,18 +1,21 @@
 # project args
-file name: "elip2"
+file name: "elip5"
 caption: "defalt"
-device: "cuda:1"
+device: "cuda:2"
 
 #wandb args
 entity : "uichan980202"
 project : "DinoAE with elip"
 dataset : "elip"
-architecture : "mask + feature loss"
+architecture : "add discriminator"
 
 # train args
 batch: 16
 epoch: 500
-learning rate: 0.0001
+AE learning rate: 0.0001
+
+DIS learning rate: 0.0001
+DIS loss weight: 0.0001
 
 #model args
 

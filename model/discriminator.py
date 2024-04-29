@@ -39,6 +39,7 @@ class Discriminator(nn.Module):
 
         x = x.view(B, -1)
         x = self.regressor(x)
+        x = torch.sigmoid(x)
         return x
 
 if __name__ == "__main__":

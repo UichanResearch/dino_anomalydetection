@@ -37,10 +37,9 @@ class DinoAE(nn.Module): #constrtive learn
 
         dis_mask = torch.cat([x[:,0:1,...],recon_m],axis = 1)
         dis_img = torch.cat([x[:,0:1,...],recon_i],axis = 1)
-        dis_input = torch.cat([dis_mask,dis_img])
-        A = self.Dis(dis_input)
-        A_mask = A[:dis_mask.shape[0]]
-        A_img = A[dis_mask.shape[0]:]
+        
+        A_mask = self.Dis(dis_mask.detach())
+        A_img = self.Dis(dis_img)
         
         return {"feature1":feature1,"feature2":feature2,
                 "recon_with_img":recon_i,"recon_with_mask":recon_m,
