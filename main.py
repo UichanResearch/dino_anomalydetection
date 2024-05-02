@@ -1,4 +1,5 @@
 from model.DinoAE import *
+from model.discriminator import Discriminator
 from tools.dataloaders import load_data
 from torch.utils.data import DataLoader
 
@@ -78,64 +79,38 @@ val_normal_data = DataLoader(load_data(DATA,"val_normal"), batch_size=BATCH, shu
 val_abnormal_data = DataLoader(load_data(DATA,"val_abnormal"), batch_size=BATCH, shuffle=False, num_workers=2)
 
 # model
-model = DinoAE(device=DEVICE).to(DEVICE)
+AE = DinoAE(device=DEVICE).to(DEVICE)
 
 # optimizer
-AE_optimizer = torch.optim.Adam(model.parameters(), lr=lr_AE, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
+AE_optimizer = torch.optim.Adam(AE.parameters(), lr=lr_AE, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(AE_optimizer, T_max= 300, eta_min= lr_AE * 0.2)
-
-DIS_optimizer = torch.optim.Adam(model.parameters(), lr=lr_DIS, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
 
 #loss
 recon_img_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 recon_mask_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 feature_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
-ce = nn.BCEWithLogitsLoss().cuda()
 
 best_val_loss = 100
 for e in range(EPOCH):
     print(e)
     #train
-    model.train()
     train_loss = 0
     total_recon_img = 0
     total_recon_mask = 0
     total_feature = 0
 
-    batches_done = 0
-    limit = len(train_data) - len(train_data) % 2
+    AE.train()
     for i, (data, label) in enumerate(tqdm(train_data)):
-        DIS_optimizer.zero_grad()
         AE_optimizer.zero_grad()
-        if i > limit:
-            break
-        batches_done += 1
-
         data = data.to(DEVICE)
         label = label.to(DEVICE)
         img = data[:,0:1,...]
 
-        #train discreminator
-        result = model(data)
-
-        d_loss = ce(result["A_img"], torch.ones_like(result["A_img"]))
-        d_loss += ce(result["A_mask"], torch.zeros_like(result["A_mask"]))
-        d_loss *= weight_DIS
-
-        d_loss.backward()
-        DIS_optimizer.step()
-
-        #train AE
-        DIS_optimizer.zero_grad()
-        AE_optimizer.zero_grad()
-        result = model(data)
+        result = AE(data)
         recon_img_loss = recon_img_criterion(result["recon_with_img"],img)
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
-        feature_loss = feature_criterion(result["feature1"],result["feature2"])
 
-        #loss = recon_img_loss + feature_loss/(16*16+1)
         loss = recon_img_loss + recon_mask_loss
-        #loss = recon_img_loss + feature_loss/(16*16+1) + recon_mask_loss
 
         loss.backward()
         AE_optimizer.step()
@@ -143,18 +118,15 @@ for e in range(EPOCH):
         train_loss += float(loss)/len(label)
         total_recon_img += float(recon_img_loss)/len(label) 
         total_recon_mask += float(recon_mask_loss)/len(label)
-        total_feature += float(feature_loss)/len(label)
     
     train_img = img[0][0].cpu().detach().numpy()
     train_recon_img = result["recon_with_img"][0][0].cpu().detach().numpy()
-    train_recon_img = cv2.putText(train_recon_img, str(int(result["A_img"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
     train_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
-    train_recon_mask = cv2.putText(train_recon_mask, str(int(result["A_mask"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
 
     train_result = np.hstack([train_img,train_recon_img,train_recon_mask])
 
     # val
-    model.eval()
+    AE.eval()
     val_loss = 0
     val_normal = 0
     val_abnormal = 0
@@ -164,7 +136,7 @@ for e in range(EPOCH):
         label = label.to(DEVICE)
         img = data[:,0:1,...]
 
-        result = model(data)
+        result = AE(data)
 
         recon_loss_v = recon_img_criterion(result["recon_with_mask"],img)
         val_normal += float(recon_loss_v)/len(label)
@@ -173,7 +145,6 @@ for e in range(EPOCH):
     normal_img = img[0][0].cpu().detach().numpy()
     normal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
     residual_img = np.abs(normal_img - normal_recon_mask)
-    normal_recon_mask = cv2.putText(normal_recon_mask, str(int(result["A_mask"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
     normal_result = np.hstack([normal_img,normal_recon_mask,residual_img])
     
     for data, label in tqdm(val_abnormal_data): # abnormal
@@ -181,7 +152,7 @@ for e in range(EPOCH):
         label = label.to(DEVICE)
         img = data[:,0:1,...]
 
-        result = model(data)
+        result = AE(data)
 
         recon_loss_v = recon_img_criterion(result["recon_with_mask"],img)
         val_abnormal += float(recon_loss_v)/len(label)
@@ -190,7 +161,6 @@ for e in range(EPOCH):
     abnormal_img = img[0][0].cpu().detach().numpy()
     abnormal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
     residual_img = np.abs(abnormal_img - abnormal_recon_mask)
-    abnormal_recon_mask = cv2.putText(abnormal_recon_mask, str(int(result["A_mask"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
     abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,residual_img])
 
     #save result
@@ -198,9 +168,9 @@ for e in range(EPOCH):
     plt.imsave(os.path.join("result",NAME,"imgs",num+".png"),np.vstack([train_result,normal_result,abnormal_result]))
 
     #save model
-    torch.save(model.state_dict(), os.path.join("result",NAME,"model","last.pth"))
+    torch.save(AE.state_dict(), os.path.join("result",NAME,"model","last.pth"))
     if val_normal <= best_val_loss:
-        torch.save(model.state_dict(), os.path.join("result",NAME,"model","best.pth"))
+        torch.save(AE.state_dict(), os.path.join("result",NAME,"model","best.pth"))
         best_val_loss = val_normal
 
     wandb.log({
@@ -209,7 +179,6 @@ for e in range(EPOCH):
         "recon_img":total_recon_img,
         "recon_mask":total_recon_mask,
         "feature":total_feature,
-        "discriminator_loss":d_loss,
 
         #val loss
         "val_total":val_loss,

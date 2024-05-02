@@ -10,7 +10,7 @@ class Discriminator(nn.Module):
         keep_stats = True
 
         self.conv_model = nn.Sequential(
-            nn.Conv2d(2, 16, 5, 2, 2, bias=True),
+            nn.Conv2d(1, 16, 5, 2, 2, bias=True),
             nn.BatchNorm2d(16, track_running_stats=keep_stats),
             nn.LeakyReLU(0.2, inplace=inplace),
             # group1

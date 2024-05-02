@@ -1,18 +1,21 @@
 # project args
-file name: "chexpert6"
+file name: "chexpert12"
 caption: "defalt"
-device: "cuda:2"
+device: "cuda:0"
 
 #wandb args
 entity : "uichan980202"
 project : "DinoAE with chexpert"
 dataset : "chexpert"
-architecture : "basic Dino + Mem matrix in decoder"
+architecture : "discriminator"
 
 # train args
 batch: 8
 epoch: 500
-learning rate: 0.0001
+AE learning rate: 0.0001
+
+DIS learning rate: 0.0001
+DIS loss weight: 0.001
 
 #model args
 

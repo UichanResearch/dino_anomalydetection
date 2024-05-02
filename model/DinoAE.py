@@ -7,44 +7,49 @@ import random
     
 class DinoAE(nn.Module): #constrtive learn
     def __init__(self,device = "cuda"):
-        # img = torch.zeros(16,3,224,224).to("cuda")
         super().__init__()
         self.device = device
+        sample = torch.ones([1,3,224,224]).to(device)
         self.En = DinoEncoder().to(device)
         self.De = ViTDecoder(device = device).to(device)
-        self.Dis = Discriminator().to(device)
+        temp_feature = self.En(sample)
+        self.patch_row = int((temp_feature.shape[1] - 1)**0.5)
 
         self.mask1,self.mask2 = self.gen_img_mask()
         self.mask1 = self.mask1.to(device)
         self.mask2 = self.mask2.to(device)
+
+        self.feature_mask1 = torch.zeros([1,temp_feature.shape[1],1]).to(device)
+        for i in range(self.patch_row):
+            for j in range(self.patch_row):
+                if i % 2 == j % 2:
+                    self.feature_mask1[0,i*self.patch_row + j+1,0] = 1
+        self.feature_mask2 = torch.ones_like(self.feature_mask1) - self.feature_mask1
+        self.feature_mask1[0,0,0] = 1 #cls tocken
+        self.feature_mask2[0,0,0] = 1 #cls tocken
+
+        self.feature_mask1.to(device)
+        self.feature_mask2.to(device)
     
     def forward(self,x,random_mask = False):
-        x1 = x.clone()
-        x2 = x.clone()
-        if random_mask:
-            self.gen_img_mask(random_mask=True)
-        x1 *= self.mask1
-        x2 *= self.mask2
+        feature = self.En(x)
 
-        feature1 = self.En(x1)
-        feature2 = self.En(x2)
+        feature1 = feature * self.feature_mask1
+        feature2 = feature * self.feature_mask2
+        cls_tocken = feature[:,1,:]
 
-        x1,x2,f_loss = self.De(feature1,feature2)
-        
+        x1,x2 = self.De(feature1,feature2)
 
         recon_i = x1 * self.mask1 + x2 * self.mask2
         recon_m = x1 * self.mask2 + x2 * self.mask1
-
-        dis_mask = torch.cat([x[:,0:1,...],recon_m],axis = 1)
-        dis_img = torch.cat([x[:,0:1,...],recon_i],axis = 1)
         
-        A_mask = self.Dis(dis_mask.detach())
-        A_img = self.Dis(dis_img)
+        #A_mask = self.Dis(recon_m.detach())
+        #A_img = self.Dis(x[:,0:1,...])
         
-        return {"feature1":feature1,"feature2":feature2,
-                "recon_with_img":recon_i,"recon_with_mask":recon_m,
-                "f_loss":f_loss,
-                "A_mask":A_mask, "A_img":A_img}
+        return {"feature":feature,
+                "recon_with_img":recon_i,
+                "recon_with_mask":recon_m,
+                }
     
     @staticmethod
     def gen_img_mask(random_mask = False):

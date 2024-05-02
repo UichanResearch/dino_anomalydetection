@@ -44,10 +44,6 @@ class ViTDecoder(nn.Module):
         self.decoder_blocks = nn.ModuleList([
             Block(decoder_embed_dim, decoder_num_heads, mlp_ratio, qkv_bias=True, norm_layer=norm_layer)
             for i in range(decoder_depth)])
-        
-        self.memory_blocks = nn.ModuleList([
-            Memory(num_slots = mem_slot,slot_dim = decoder_embed_dim)
-            for i in range(decoder_depth-1)])
 
         self.decoder_norm = norm_layer(decoder_embed_dim)
         self.decoder_pred = nn.Linear(decoder_embed_dim, patch_size**2 * in_chans, bias=True) # decoder to patch
@@ -105,28 +101,9 @@ class ViTDecoder(nn.Module):
 
         total_feature_loss = 0.0
         # apply Transformer blocks
-        for i in range(self.decoder_depth-1):
+        for i in range(self.decoder_depth):
             x1 = self.decoder_blocks[i](x1)
             x2 = self.decoder_blocks[i](x2)
-            cls_index = x1.shape[1]
-            x1_cls_tocken = x1[:, cls_index-1:cls_index, :]
-            x2_cls_tocken = x2[:, cls_index-1:cls_index, :]
-
-            # image = x1[:, 1:, :]*self.feature_mask1 + x2[:, 1:, :]*self.feature_mask2
-            # masked = x1[:, 1:, :]*self.feature_mask2 + x2[:, 1:, :]*self.feature_mask1
-            # new_masked = []
-            # for j in range(masked.shape[1]):
-            #     result = self.memory_blocks[i](masked[:,j,:],j)
-            #     result = result.reshape([result.shape[0],1,-1])
-            #     new_masked.append(result)
-            # masked = torch.cat(new_masked,dim = 1)
-            total_feature_loss += self.feature_loss(x1,x2)
-            # x1 =  torch.cat([image*self.feature_mask1 + masked*self.feature_mask2,x1_cls_tocken],dim = 1)
-            # x2 =  torch.cat([image*self.feature_mask2 + masked*self.feature_mask1,x2_cls_tocken],dim = 1)
-            
-
-        x1 = self.decoder_blocks[-1](x1)
-        x2 = self.decoder_blocks[-1](x2)
 
         x1 = self.decoder_norm(x1)
         x2 = self.decoder_norm(x2)
@@ -139,13 +116,13 @@ class ViTDecoder(nn.Module):
         x1 = x1[:, 1:, :]
         x2 = x2[:, 1:, :]
 
-        return x1,x2,total_feature_loss
+        return x1,x2
 
     def forward(self, x1,x2):
-        x1,x2,loss = self.forward_decoder(x1,x2)  # [N, L, p*p*3]
+        x1,x2= self.forward_decoder(x1,x2)  # [N, L, p*p*3]
         x1 = unpatchify(x1) # B P*P 14 14
         x2 = unpatchify(x2)
-        return x1,x2,loss
+        return x1,x2
 
 if __name__ == "__main__":
     model = ViTDecoder(
