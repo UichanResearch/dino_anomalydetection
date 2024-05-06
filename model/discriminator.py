@@ -10,7 +10,7 @@ class Discriminator(nn.Module):
         keep_stats = True
 
         self.conv_model = nn.Sequential(
-            nn.Conv2d(2, 16, 5, 2, 2, bias=True),
+            nn.Conv2d(1, 16, 5, 2, 2, bias=True),
             nn.BatchNorm2d(16, track_running_stats=keep_stats),
             nn.LeakyReLU(0.2, inplace=inplace),
             # group1
@@ -30,16 +30,12 @@ class Discriminator(nn.Module):
             nn.BatchNorm2d(128, track_running_stats=keep_stats),
             nn.LeakyReLU(0.2, inplace=inplace),
         )
-        self.regressor = nn.Linear(128 * size * size, 1)
+        
 
     def forward(self, img):
         B = img.size(0)
-
         x = self.conv_model(img) # B, 128, W/16, H/16
-
         x = x.view(B, -1)
-        x = self.regressor(x)
-        x = torch.sigmoid(x)
         return x
 
 if __name__ == "__main__":

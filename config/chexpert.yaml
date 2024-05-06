@@ -1,7 +1,7 @@
 # project args
-file name: "chexpert6"
+file name: "chexpert13"
 caption: "defalt"
-device: "cuda:2"
+device: "cuda:1"
 
 #wandb args
 entity : "uichan980202"
@@ -13,6 +13,10 @@ architecture : "basic Dino + Mem matrix in decoder"
 batch: 8
 epoch: 500
 learning rate: 0.0001
+AE learning rate: 0.0001
+
+DIS learning rate: 0.0001
+DIS loss weight: 0.0001
 
 #model args
 

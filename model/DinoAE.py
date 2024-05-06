@@ -12,7 +12,7 @@ class DinoAE(nn.Module): #constrtive learn
         self.device = device
         self.En = DinoEncoder().to(device)
         self.De = ViTDecoder(device = device).to(device)
-        self.Dis = Discriminator().to(device)
+        self.DIS = Discriminator().to(device)
 
         self.mask1,self.mask2 = self.gen_img_mask()
         self.mask1 = self.mask1.to(device)
@@ -31,20 +31,16 @@ class DinoAE(nn.Module): #constrtive learn
 
         x1,x2,f_loss = self.De(feature1,feature2)
         
-
         recon_i = x1 * self.mask1 + x2 * self.mask2
         recon_m = x1 * self.mask2 + x2 * self.mask1
 
-        dis_mask = torch.cat([x[:,0:1,...],recon_m],axis = 1)
-        dis_img = torch.cat([x[:,0:1,...],recon_i],axis = 1)
-        
-        A_mask = self.Dis(dis_mask.detach())
-        A_img = self.Dis(dis_img)
-        
+        feature_i = self.DIS(recon_i.detach())
+        feature_m = self.DIS(recon_m.detach())
+
         return {"feature1":feature1,"feature2":feature2,
                 "recon_with_img":recon_i,"recon_with_mask":recon_m,
-                "f_loss":f_loss,
-                "A_mask":A_mask, "A_img":A_img}
+                "feature_i":feature_i,"feature_m":feature_m,
+                "f_loss":f_loss}
     
     @staticmethod
     def gen_img_mask(random_mask = False):

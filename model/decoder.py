@@ -44,10 +44,6 @@ class ViTDecoder(nn.Module):
         self.decoder_blocks = nn.ModuleList([
             Block(decoder_embed_dim, decoder_num_heads, mlp_ratio, qkv_bias=True, norm_layer=norm_layer)
             for i in range(decoder_depth)])
-        
-        self.memory_blocks = nn.ModuleList([
-            Memory(num_slots = mem_slot,slot_dim = decoder_embed_dim)
-            for i in range(decoder_depth-1)])
 
         self.decoder_norm = norm_layer(decoder_embed_dim)
         self.decoder_pred = nn.Linear(decoder_embed_dim, patch_size**2 * in_chans, bias=True) # decoder to patch

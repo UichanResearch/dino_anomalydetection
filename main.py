@@ -84,13 +84,10 @@ model = DinoAE(device=DEVICE).to(DEVICE)
 AE_optimizer = torch.optim.Adam(model.parameters(), lr=lr_AE, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(AE_optimizer, T_max= 300, eta_min= lr_AE * 0.2)
 
-DIS_optimizer = torch.optim.Adam(model.parameters(), lr=lr_DIS, eps=1e-7, betas=(0.5, 0.999), weight_decay=0.00001)
-
 #loss
 recon_img_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 recon_mask_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
-feature_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
-ce = nn.BCEWithLogitsLoss().cuda()
+discriminator_criterion = torch.nn.MSELoss(reduction='mean').to(DEVICE)
 
 best_val_loss = 100
 for e in range(EPOCH):
@@ -102,54 +99,31 @@ for e in range(EPOCH):
     total_recon_mask = 0
     total_feature = 0
 
-    batches_done = 0
-    limit = len(train_data) - len(train_data) % 2
+    model.train()
     for i, (data, label) in enumerate(tqdm(train_data)):
-        DIS_optimizer.zero_grad()
-        AE_optimizer.zero_grad()
-        if i > limit:
-            break
-        batches_done += 1
-
         data = data.to(DEVICE)
         label = label.to(DEVICE)
         img = data[:,0:1,...]
 
-        #train discreminator
-        result = model(data)
-
-        d_loss = ce(result["A_img"], torch.ones_like(result["A_img"]))
-        d_loss += ce(result["A_mask"], torch.zeros_like(result["A_mask"]))
-        d_loss *= weight_DIS
-
-        d_loss.backward()
-        DIS_optimizer.step()
-
         #train AE
-        DIS_optimizer.zero_grad()
         AE_optimizer.zero_grad()
         result = model(data)
         recon_img_loss = recon_img_criterion(result["recon_with_img"],img)
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
-        feature_loss = feature_criterion(result["feature1"],result["feature2"])
+        discriminator_loss = discriminator_criterion(result["feature_i"],result["feature_m"])
+        loss = (recon_img_loss + recon_mask_loss +  discriminator_loss)/len(label)
 
-        #loss = recon_img_loss + feature_loss/(16*16+1)
-        loss = recon_img_loss + recon_mask_loss
-        #loss = recon_img_loss + feature_loss/(16*16+1) + recon_mask_loss
 
         loss.backward()
         AE_optimizer.step()
 
-        train_loss += float(loss)/len(label)
-        total_recon_img += float(recon_img_loss)/len(label) 
-        total_recon_mask += float(recon_mask_loss)/len(label)
-        total_feature += float(feature_loss)/len(label)
+        train_loss += float(loss)
+        total_recon_img += float(recon_img_loss)
+        total_recon_mask += float(recon_mask_loss)
     
     train_img = img[0][0].cpu().detach().numpy()
     train_recon_img = result["recon_with_img"][0][0].cpu().detach().numpy()
-    train_recon_img = cv2.putText(train_recon_img, str(int(result["A_img"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
     train_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
-    train_recon_mask = cv2.putText(train_recon_mask, str(int(result["A_mask"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
 
     train_result = np.hstack([train_img,train_recon_img,train_recon_mask])
 
@@ -173,7 +147,6 @@ for e in range(EPOCH):
     normal_img = img[0][0].cpu().detach().numpy()
     normal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
     residual_img = np.abs(normal_img - normal_recon_mask)
-    normal_recon_mask = cv2.putText(normal_recon_mask, str(int(result["A_mask"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
     normal_result = np.hstack([normal_img,normal_recon_mask,residual_img])
     
     for data, label in tqdm(val_abnormal_data): # abnormal
@@ -190,7 +163,6 @@ for e in range(EPOCH):
     abnormal_img = img[0][0].cpu().detach().numpy()
     abnormal_recon_mask = result["recon_with_mask"][0][0].cpu().detach().numpy()
     residual_img = np.abs(abnormal_img - abnormal_recon_mask)
-    abnormal_recon_mask = cv2.putText(abnormal_recon_mask, str(int(result["A_mask"][0][0]*100)), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (1), 1, cv2.LINE_AA)
     abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,residual_img])
 
     #save result
@@ -209,7 +181,6 @@ for e in range(EPOCH):
         "recon_img":total_recon_img,
         "recon_mask":total_recon_mask,
         "feature":total_feature,
-        "discriminator_loss":d_loss,
 
         #val loss
         "val_total":val_loss,
