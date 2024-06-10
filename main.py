@@ -15,31 +15,6 @@ import wandb
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-
-from tqdm import tqdm
-
-#arg
-parser = argparse.ArgumentParser()
-parser.add_argument('config',nargs='?', default='digit_local.yaml' ,type=str, help='config yaml')
-args = parser.parse_args()
-
-from model.DinoAE import *
-from tools.dataloaders import load_data
-from torch.utils.data import DataLoader
-
-from tools.make_dir import make_dir
-from tools.set_random_seed import set_random_seed
-set_random_seed(42)
-
-import os
-import yaml
-import argparse
-import math
-
-import wandb
-import numpy as np
-import torch
-import matplotlib.pyplot as plt
 import cv2
 
 from tqdm import tqdm
@@ -70,7 +45,10 @@ lr_DIS = config["DIS learning rate"]
 weight_DIS = config["DIS loss weight"]
 
 #init
-make_dir(NAME)
+try:
+    make_dir(NAME)
+except:
+    pass
 
 # load data
 train_data = DataLoader(load_data(DATA,"train"), batch_size=BATCH, shuffle=True, num_workers=2)
@@ -110,7 +88,12 @@ for e in range(EPOCH):
         result = model(data)
         recon_img_loss = recon_img_criterion(result["recon_with_img"],img)
         recon_mask_loss = recon_mask_criterion(result["recon_with_mask"],img)
-        discriminator_loss = discriminator_criterion(result["feature_i"],result["feature_m"])
+
+        dis_loss_im = discriminator_criterion(result["feature_i"],result["feature_m"])
+        dis_loss_xm = discriminator_criterion(result["feature_x"],result["feature_m"])
+        dis_loss_xi = discriminator_criterion(result["feature_x"],result["feature_i"])
+        discriminator_loss = dis_loss_im + dis_loss_xi - dis_loss_xm
+
         loss = (recon_img_loss + recon_mask_loss +  discriminator_loss)/len(label)
 
 
