@@ -30,6 +30,6 @@ class DinoEncoder(nn.Module):
     
 if __name__ == "__main__":
     En = DinoEncoder()
-    img = torch.zeros(1,3,224,224).to("cuda")
+    img = torch.zeros(1,3,224,224)
     result = En(img)
     print(result.shape)

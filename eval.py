@@ -15,17 +15,22 @@ import wandb
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.manifold import TSNE
 
 from tqdm import tqdm
 
-DATA = "elip" #zhang chexperts
-PATH = "result/elip2"
+DATA = "chexpert" #zhang chexpert
+PATH = "result/chexpert15"
 BATCH = 1
-DEVICE = "cuda:0"
+DEVICE = "cuda:2"
 
 #dir
 img_dir = os.path.join(PATH,"test")
-#os.mkdir(img_dir)
+try:
+    os.mkdir(img_dir)
+except:
+    pass
 
 #data
 normal_data = DataLoader(load_data(DATA,"test_normal"), batch_size=BATCH, shuffle=False, num_workers=2)
@@ -46,6 +51,11 @@ model.eval()
 total_loss = 0
 total_normal = 0
 total_abnormal = 0
+
+normal_feature_i = []
+normal_feature_m = []
+abnormal_feature_i = []
+abnormal_feature_m = []
 
 num = 0
 for data, label in tqdm(normal_data): #normal
@@ -71,6 +81,10 @@ for data, label in tqdm(normal_data): #normal
     num_str = str(num + 1000)[1:]
     plt.imsave(os.path.join(img_dir,"normal"+num_str+".png"),normal_result)
 
+    normal_feature_i.append(result["feature_i"][0].cpu().detach().numpy())
+    normal_feature_m.append(result["feature_m"][0].cpu().detach().numpy())
+    
+
 num = 0
 for data, label in tqdm(abnormal_data): # abnormal
     num+=1
@@ -94,6 +108,24 @@ for data, label in tqdm(abnormal_data): # abnormal
     abnormal_result = np.hstack([abnormal_img,abnormal_recon_mask,residual_img1,abnormal_recon_img,residual_img2])
     num_str = str(num + 1000)[1:]
     plt.imsave(os.path.join(img_dir,"abnormal"+num_str+".png"),abnormal_result)
+
+    abnormal_feature_i.append(result["feature_i"][0].cpu().detach().numpy())
+    abnormal_feature_m.append(result["feature_m"][0].cpu().detach().numpy())
+
+#tsne
+data = np.vstack([normal_feature_i,normal_feature_m,abnormal_feature_i,abnormal_feature_m])
+label = np.array([0]*len(normal_feature_i) + [1]*len(normal_feature_m) + [2]*len(abnormal_feature_i) + [3]*len(abnormal_feature_m))
+tsne = TSNE(n_components=2, random_state=0)
+data = tsne.fit_transform(data)
+
+plt.scatter(data[label==0,0],data[label==0,1],label="normal_i")
+plt.scatter(data[label==1,0],data[label==1,1],label="normal_m")
+plt.scatter(data[label==2,0],data[label==2,1],label="abnormal_i")
+plt.scatter(data[label==3,0],data[label==3,1],label="abnormal_m")
+plt.legend()
+plt.savefig(os.path.join(img_dir,"tsne.png"))
+plt.close()
+
 
 
 

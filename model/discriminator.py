@@ -30,13 +30,13 @@ class Discriminator(nn.Module):
             nn.BatchNorm2d(128, track_running_stats=keep_stats),
             nn.LeakyReLU(0.2, inplace=inplace),
         )
-        
+
 
     def forward(self, img):
         B = img.size(0)
         x = self.conv_model(img) # B, 128, W/16, H/16
-        x = x.view(B, -1)
+        x = x.view(B,-1)
         return x
 
-if __name__ == "__main__":
-    pass
+
+
